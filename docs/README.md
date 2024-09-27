@@ -14,9 +14,13 @@ The board uses a RP2040 to forward inputs from the host to the guest machine - u
 
 # Hardware Design
 The electrical design consists of a RP2040, the USB Type A port and a USB 2.0 hub to connect them. It was designed with kicad.
-TODO: picture of assembled PCB
+
+![](CaseOff.jpg)
+
 There is also a pretty basic enclosure design made with freecad.  
-TODO: picture with enclosure
+
+![](CaseOn.jpg)
+
 
 ![](HWDiagram.excalidraw.svg)
 
