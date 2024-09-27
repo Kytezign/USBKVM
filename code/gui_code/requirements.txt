@@ -1,0 +1,9 @@
+# Install requirements with something like:
+# pip install -r requirements.txt
+# on arch you can try (if PYTYHONPATH is a user folder):
+# pip install --target $PYTHONPATH -r requirments.txt
+
+opencv
+pyserial
+pysdl2
+numpy

@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "code/ucode"
+		},
+		{
+			"path": "code/gui_code"
+		},
+		{
+			"name": "src",
+			"path": "."
+		}
+	],
+}

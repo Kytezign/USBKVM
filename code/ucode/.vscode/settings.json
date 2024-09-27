@@ -1,0 +1,5 @@
+
+{
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.generator": "Unix Makefiles",
+}
