@@ -1,14 +1,14 @@
 # Under Construction Warning
-This documentation is incomplete but I'm fast losing motivation for this project but I wanted to at least get it out there since I put in all this work. For anybody venturing a reproduction of this, very limited testing has been done so almost certainly something will not work or will need better documentation. 
+This documentation is incomplete but I'm fast losing motivation for this project but I wanted to at least get it out there since I put in all this work. For anybody venturing a reproduction of this, very limited testing has been done so almost certainly something will not work or will need better documentation but should be pretty quick to resolve. 
 # Project Overview
-This USB KVM (keyboard video mouse) integrates off the shelf USB capture cards with a custom designed pcb to enable direct control of an otherwise headless computer though a host PC.  This is a hobby project more than anything though, it does feel like a thing that should already exist.
+This USB KVM (keyboard video mouse) integrates off the shelf USB capture cards with a custom pcb to enable direct control of an otherwise headless computer though a host PC.  This is a hobby project more than anything though, it does feel like a thing that should already exist.  In fact, there are similar designs that have started popping up on my radar while working on this - [see below](#Similar%20Projects). 
 
 ![](HighLevelDiagram.excalidraw.svg)
 
-And in fact, there are similar designs that have started popping up on my radar while working on this - [see below](#Similar%20Projects). 
-The board uses a RP2040 to forward inputs from the host to the guest machine - utilizing the [USB-PIO features ](https://github.com/sekigon-gonnoc/Pico-PIO-USB)of the RP2040 to enable two usb device ports connecting to two separate machines from a single chip.  The RP2040 also implements a read only host side USB mass storage device which has the GUI (python). 
+
+The board uses a RP2040 to forward inputs from the host to the guest machine - utilizing the [USB-PIO features ](https://github.com/sekigon-gonnoc/Pico-PIO-USB)of the RP2040 to enable two usb device ports connecting to two separate machines from a single chip.  The RP2040 also implements a read only host side USB mass storage device which holds the GUI - everything in one package.  
 ## Similar Projects
-- While working on this I found some similar projects:
+- While working on this I found some similar projects pop up:
     - https://github.com/carrotIndustries/usbkvm
     - https://openterface.com/
 ## License
@@ -69,21 +69,28 @@ TODO: Fill in this outline
 - PICO SDK 2.0
 - TinyUSB (part of pico-sdk 2.0)
 
-## Python GUI 
-
+## GUI 
+There are two versions of the GUI.  A SDL3 based version which is written in Zig.  SDL3 must be installed on the machine.  And a python version which has several dependencies including SDL2, OpenCV and pyserial. 
 ### Compatibility
 I've only really tested this on my setup so I've no clue how well it might work in any other setup.  I have tried to use cross platform, adaptable libraries so I'm hoping it's not too much work to enable elsewhere. 
+I'm pretty sure the SDL3/Zig version is close to working on windows.  There is one part that needs to be updated I think (see code comment).  I don't have an easy test platform.  
 
 # Next steps (in no order):
 - Audio support in GUI (work around is to use OS audio controls)
 - Bug fixes and compatibility improvements
 - Nothing supports having multiples connected a the same time (though not sure the use case is relevant the case should be handled somehow). 
 - Support Controller Inputs
-- Reduce python dependencies - maybe package what I can if it will fit?
-    - Or Migrate to different GUI framework & language with small bin side (fits in the RP2040 Flash) and cross platform support.
-    - SDL2 has support for other languages so should be pretty close. 
-- Support special keys & key combinations (in UI)
-- Windows support - should be close but I think it will break right now because discovery & configuration is V4L2 based.
+- GUI based controls
+    - Support special keys & key combinations (in UI)
+    - Fallback mouse mode (some things don't like absolute mouse I guess)
+- Windows support
+- Simplify launching GUI (currently requires coping the binary etc.)
+- FAT12 builder is pretty limited.  I'd like to move to something else.
+```
+# 1MB img file
+mkfs.fat -F 12 -n USBKVM -C temp.img 1024
+mcopy -i test3.img -s testFolderLongName/ ::
+```
 ## Future Ideas
 - Integrate the MS2130 into the design directly
     - If I find a source, I'll likely try this.

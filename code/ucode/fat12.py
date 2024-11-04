@@ -32,7 +32,6 @@ class FAT12:
         assert self.NUM_FATS == 1, "Only one FAT supported."
         assert len(name) == 12, "Wrong name length"
         self._data = FixedList([FixedByteArray([0 for _ in range(block_size)]) for _ in range(block_number)])
-        # self._data = np.zeros((block_number, block_size),np.ubyte)
         self.block_size = block_size
         self.block_number = block_number
         self._init_boot_sector()
@@ -168,10 +167,14 @@ class FAT12:
             break
 
     def _next_fat(self, add_placeholder=False):
-        nf = self.fat_entries.index(0)
-        if add_placeholder:
-            self.fat_entries[nf] = 1 # just temprary invalid value so the next call points to a new block
-        return nf
+        try:
+            nf = self.fat_entries.index(0)
+            if add_placeholder:
+                self.fat_entries[nf] = 1 # just temprary invalid value so the next call points to a new block
+            return nf
+        except ValueError:
+            print("Failed to find new fat block", len(self.fat_entries))
+            raise
 
 
     def add_file(self, in_file, img_dir):
@@ -335,12 +338,17 @@ def dir_to_img(drive_name, in_dir, out_file, skip=[]):
                 file_list.append(( full_path, rel_dir_path))
                 s = os.stat(full_path)
                 # create dir entry
-                total_size += ceil(s.st_size/block_size)*block_size*1.5 + 35 # Estimate total size..
+                total_size += ceil(s.st_size/block_size)*block_size*2 + 35 # Estimate total size..
     tot_blocks = ceil(total_size/block_size)
     name = drive_name + ".   "
     fs = FAT12(name,tot_blocks, block_size)
     for in_file, img_path in file_list:
-        fs.add_file(in_file, img_path)
+        try:
+            fs.add_file(in_file, img_path)
+        except:
+            print("Failed on file:", in_file)
+            print("Size:", os.stat(in_file).st_size)
+            raise
     fs.write_img_file(out_file)
     return tot_blocks, block_size
 

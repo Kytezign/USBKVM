@@ -1,0 +1,13 @@
+{
+    "zig.path": "zig",
+    "zig.zls.path": "zls",
+    "zig.initialSetupDone": true,
+    "zig.buildArgs": [
+        "run"
+    ],
+    "files.associations": {
+        "sdl.h": "c",
+        "any": "c",
+        "complex": "c"
+    }
+}

@@ -72,3 +72,9 @@ class SERCONTROL:
     def read_buff(self):
         return self.ser.read_all()
 
+if __name__ == "__main__":
+        ports = serial.tools.list_ports.comports()
+        print("\nAvalible Ports:")
+        for portinfo in ports:
+            if portinfo.vid:
+                print(portinfo.description, hex(portinfo.vid), hex(portinfo.pid))

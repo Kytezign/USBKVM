@@ -9,6 +9,8 @@ import psutil
 import shutil
 import time
 
+# TODO: Document dependandies of this build/deploy system...
+
 enumstr ="""
 enum
 {{
@@ -35,22 +37,40 @@ def convert_to_c(in_file, out_file, num_blocks, block_size):
             of.write(chr(0x0d)+"};")
        
 def filter(name):
-    for n in ["__pycache__", ".vscode","README","requirements", "other_guis"]:
+    for n in ["__pycache__", ".vscode","README","requirements", "launch_gui.sh", "usbkvm_sdl3", "other_guis"]:
         if n in str(name):
             return False
     return True
 
+def dir_to_img(img_path, root_dir):
+    # 500kB I think.
+    sector_size = 1024
+    sector_count = 512
+    os.system(f'mkfs.fat -F 12 -n USBKVM -S {sector_size} -C "{img_path}" {sector_count}')
+    for r, dirs, files in os.walk(root_dir):
+        for file_name in files:
+            rel_dir_path = os.path.relpath(r, root_dir)
+            rel_dir_path = "" if rel_dir_path == "." else rel_dir_path
+            full_path = os.path.join(r, file_name)
+            os.system(f'mcopy -i {img_path} -s "{full_path}" ::{rel_dir_path}')
+    return sector_count, sector_size
+
 def prep_dir_image():
     in_folder = r"../gui_code"
+    zig_bin_folder = r"../zig_gui/build/zig-out/bin"
     out_file = "folder_bin.c"
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        zipapp_loc = os.path.join(tmpdirname, "run_usb_kvm.pyz")
-        shutil.copy(os.path.join(in_folder, "README.txt"), tmpdirname)
-        shutil.copy(os.path.join(in_folder, "requirements.txt"), tmpdirname)
-        img_loc = os.path.join(tmpdirname, "temp.img")
-        zipapp.create_archive(in_folder, zipapp_loc, compressed=True, filter=filter)
-        tot_blocks, block_size = fat12.dir_to_img("USBKVM  ",tmpdirname, img_loc)
-        convert_to_c(img_loc, out_file, tot_blocks, block_size)
+    with tempfile.TemporaryDirectory() as img_dir:
+        img_loc = os.path.join(img_dir, "temp.img")
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            zipapp_loc = os.path.join(tmpdirname, "run_usb_kvm.pyz")
+            shutil.copy(os.path.join(in_folder, "README.txt"), tmpdirname)
+            shutil.copy(os.path.join(in_folder, "requirements.txt"), tmpdirname)
+            shutil.copy(os.path.join(in_folder, "launch_gui.sh"), tmpdirname)
+            shutil.copy(os.path.join(zig_bin_folder, "usbkvm_sdl3"), tmpdirname)
+            zipapp.create_archive(in_folder, zipapp_loc, compressed=True, filter=filter)
+            tot_blocks, block_size = dir_to_img(img_loc, tmpdirname)
+            convert_to_c(img_loc, out_file, tot_blocks, block_size)
 
 def build_project():
     os.system("cmake --build build --config Debug --target all")
@@ -100,9 +120,18 @@ def deploy_swd():
     os.system(f'openocd -f interface/cmsis-dap.cfg -f rp2040_c0.cfg -c "program build/{ucode_name}.elf verify reset exit"')
 
 
+def build_zig():
+    cwd = os.getcwd()
+    try:
+        os.chdir(r"../zig_gui")
+        os.system(f'zig build -Doptimize=ReleaseSmall -p ./build/zig-out')
+    finally:
+        os.chdir(cwd)
+
 # openocd -f interface/cmsis-dap.cfg -f rp2040_c0.cfg -c "program build/hid_forward.elf verify reset exit"
 # cmake --build build --config Debug --target all -j 18
 if __name__=="__main__":
+    build_zig()
     prep_dir_image()
     build_project()
     deploy_bootmode()

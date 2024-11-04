@@ -1,10 +1,16 @@
 {
 	"folders": [
 		{
+			"name": "ucode",
 			"path": "code/ucode"
 		},
 		{
+			"name": "gui_code",
 			"path": "code/gui_code"
+		},
+		{
+			"name": "zig_gui",
+			"path": "code/zig_gui"
 		},
 		{
 			"name": "src",
