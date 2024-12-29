@@ -1,0 +1,112 @@
+.pio_version 0 // only requires PIO version 0
+
+
+.program controller_n1
+.side_set 1
+.wrap_target
+    out pins, 1 side 0      // stalls after side Set if fifo is empty
+    wait 1 pin 0 side 0     // wait for ready with clk = 1
+    nop side 1   [1]           // might still work with asymetrical clock but we'll delay anyway?  
+.wrap
+
+% c-sdk {
+    // likely won't matter but clock speed must be slow enough that the periphrial has time to assert the not-ready pin after each read. 
+#define CLOCKSPEED 20000000
+#include "hardware/clocks.h"
+
+void controller_program_init(PIO pio, uint sm, uint offset, uint d0, uint count, uint clock, uint ready_pin, uint msg_size) {
+    pio_sm_config c = controller_n1_program_get_default_config(offset);
+    sm_config_set_out_pins(&c, d0, count);
+    // Set this pin's GPIO function (connect PIO to the pad)
+    for (int i = 0; i < count; i++) {
+        pio_gpio_init(pio, d0+i);
+    }
+    pio_sm_set_consecutive_pindirs(pio, sm, d0, count, true);
+
+    // setup side_set
+    pio_gpio_init(pio, clock);
+    pio_sm_set_consecutive_pindirs(pio, sm, clock, 1, true);
+    sm_config_set_sideset_pins(&c, clock);
+    sm_config_set_sideset(&c, 1,0,0);
+
+    // setup input ready_pin
+    sm_config_set_in_pins(&c, ready_pin);
+    pio_gpio_init(pio, ready_pin); // ready pin
+    pio_sm_set_consecutive_pindirs(pio, sm, ready_pin, 1, false);
+
+
+    // config fifo
+    // auto pull after count bits come in
+    sm_config_set_out_shift (&c, true, true, msg_size);
+    sm_config_set_fifo_join (&c, PIO_FIFO_JOIN_TX);
+
+    // Load our configuration, and jump to the start of the program
+    pio_sm_init(pio, sm, offset, &c);
+
+    // Set clock
+    uint32_t sysClock = clock_get_hz(clk_sys);
+    float fBaud = sysClock;
+    fBaud = fBaud / CLOCKSPEED; // 9kHz or roughly 111uS per clock?
+    pio_sm_set_clkdiv(pio, sm, fBaud);
+
+    // Set the state machine running
+    pio_sm_set_enabled(pio, sm, true);
+   }
+const struct pio_program* get_controller_prog(uint count){
+    return &controller_n1_program;
+}
+%}
+
+
+
+// The clock must be the second pin. 
+// TODO I think this should work with auto push instead of the explicit push? but I'm done trying to get this to work.
+.program peripheral_n1
+.side_set 1
+.wrap_target
+    wait 1 pin 1 side 1
+    in pins 1 side 1 // in will stall with auto push if FIFO is full
+    push iffull block side 0
+    wait 0 pin 1 side 1 // side will take effect immediately (before the stall)
+.wrap
+
+% c-sdk {
+#include "hardware/clocks.h"
+
+// Clock must be +1 of the data pins
+void peripheral_program_init(PIO pio, uint sm, uint offset, uint d0, uint count, uint ready_pin, uint msg_size) {
+    pio_sm_config c = peripheral_n1_program_get_default_config(offset);
+    sm_config_set_in_pins(&c, d0);
+    // Set this pin's GPIO function (connect PIO to the pad)
+    for (int i = 0; i < count; i++) {
+        pio_gpio_init(pio, d0+i);
+    }
+    pio_gpio_init(pio, d0+count); // Clock pin
+    pio_sm_set_consecutive_pindirs(pio, sm, d0, count+1, false);
+    // input synchroniser to reduce input delay.
+    // Inputs should be stable well before the clock signal goes high - per spec
+    hw_set_bits(&pio->input_sync_bypass, 1u << d0);
+
+    // setup sideset (ready pin)
+    pio_gpio_init(pio, ready_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, ready_pin, 1, true);
+    sm_config_set_sideset_pins(&c, ready_pin);
+    sm_config_set_sideset(&c, 1,0,0);
+
+
+    // config fifo
+    // auto push after count bits come in
+    sm_config_set_in_shift(&c, true, false, msg_size);
+    sm_config_set_fifo_join (&c, PIO_FIFO_JOIN_RX);
+
+    // Load our configuration, and jump to the start of the program
+    pio_sm_init(pio, sm, offset, &c);
+
+    // Set the state machine running
+    pio_sm_set_enabled(pio, sm, true);
+   }
+const struct pio_program* get_peripheral_prog(uint count){
+    return &peripheral_n1_program;
+}
+
+%}

@@ -6,7 +6,7 @@ This USB KVM (keyboard video mouse) integrates off the shelf USB capture cards w
 ![](HighLevelDiagram.excalidraw.svg)
 
 
-The board uses a RP2040 to forward inputs from the host to the guest machine - utilizing the [USB-PIO features ](https://github.com/sekigon-gonnoc/Pico-PIO-USB)of the RP2040 to enable two usb device ports connecting to two separate machines from a single chip.  The RP2040 also implements a read only host side USB mass storage device which holds the GUI - everything in one package.  
+The board uses two RP2040s to forward inputs from the host to the guest machine (some work was done to enable the PIO based USB but it was not robust enough and had a regression in V0.6 which really messed things up).  The RP2040 also implements a read only host side USB mass storage device which holds an SDL3 based GUI executable - everything in one package except the SDL library which is dynamically linked (if I did it right).   
 ## Similar Projects
 - While working on this I found some similar projects pop up:
     - https://github.com/carrotIndustries/usbkvm
@@ -14,88 +14,68 @@ The board uses a RP2040 to forward inputs from the host to the guest machine - u
 ## License
 - Firmware and GUI Code: MIT
 - Hardware and Case: CERN Open Hardware Licence Version 2 - Permissive
-
 # Hardware Design
-The electrical design consists of a RP2040, the USB Type A port and a USB 2.0 hub to connect them. It was designed with kicad.
-
-![](CaseOff.jpg)
+The electrical design consists of two RP2040, and several connectors.  It relies on how USB3.0 is a wholly separate communication path etc. to avoid needed a hub.  So only the USB 3.0 high speed signals are connected to the capture card.  This works with the cards I've tried but I'm not sure it would work in all cases.  It uses primarily 0402 components for space saving.  Designed with kicad.
 
 There is also a pretty basic enclosure design made with freecad.  
-
-![](CaseOn.jpg)
-
 
 ![](HWDiagram.excalidraw.svg)
 
 ## BOM
-Costs based on market costs circa Q3 2024.
+Costs based on market costs circa Q1 2025.
 
-| Part                        | Quantity | Cost cnt 1 | Link                                                                          | Notes                                                                                                                                                 |
-| --------------------------- | -------- | ---------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 100n                        | 7        |            |                                                                               | 0402                                                                                                                                                  |
-| 1u                          | 4        |            |                                                                               | 0402                                                                                                                                                  |
-| 10u                         | 4        |            |                                                                               | 0402                                                                                                                                                  |
-| 15p                         | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 5.1k                        | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 20k                         | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 27.4                        | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 100                         | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 22                          | 2        |            |                                                                               | 0402                                                                                                                                                  |
-| 1k                          | 1        |            |                                                                               | 0402                                                                                                                                                  |
-| 10k                         | 1        |            |                                                                               | 0402                                                                                                                                                  |
-| 1.5k                        | 1        |            |                                                                               | 0402                                                                                                                                                  |
-| RP2040                      | 1        | $0.80      | [Link](https://mou.sr/3LW0tBj)                                                |                                                                                                                                                       |
-| W25Q16JVSSIQ                | 1        | $0.41      | [Link](https://www.mouser.com/ProductDetail/454-W25Q16JVSSIQ)                 | Other Values in the family will probably work.  Currently something around 1MB is all that's required (maybe less I'm not sure what to check yet).    |
-| MIC5504-3.3YM5              | 1        | $0.16      | [Link](https://www.mouser.com/ProductDetail/998-MIC5504-3.3YM5TR)             |                                                                                                                                                       |
-| SL2.1A                      | 1        | $0.24      | [Link](https://www.lcsc.com/product-detail/USB_CoreChips-SL2-1A_C192893.html) | LCSC Supplier                                                                                                                                         |
-| ABM8-272-T3                 | 1        | $0.58      | [Link](https://www.mouser.com/ProductDetail/815-ABM8-272-T3)                  |                                                                                                                                                       |
-| USB4056-03-A                | 1        | $0.97      | [Link](https://www.mouser.com/ProductDetail/640-USB4056-03-A)                 | USB C Connector                                                                                                                                       |
-| 10118192-0001LF             | 1        | $0.41      | [Link](https://www.mouser.com/ProductDetail/649-10118192-0001LF)              | Micro USB                                                                                                                                             |
-| USB-A3-S-RA                 | 1        | $0.62      | [Link](https://www.mouser.com/ProductDetail/737-USB-A3-S-RA)                  | Type A Connector                                                                                                                                      |
-| PCB                         | 1        | $3.33      | [Link](https://oshpark.com/)                                                  | $10 for 3.  Need to look into sharing the project on OSHPark                                                                                          |
-| HDMI to USB 3.0 with MS2130 | 1        | $7         | Search  Aliexpress                                                            | Capture card anything with the MS2130 is likely to work (also non- MS2130 based *should* work)<br>I like this one from Amazon: https://a.co/d/gPflUW0 |
-| TOTAL                       |          | $15        |                                                                               | $8 Without the capture card                                                                                                                           |
+| Part                        | Quantity | Cost cnt 1 | Link                                                              | Notes                                                                                                                                                                                          |
+| --------------------------- | -------- | ---------- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 100n                        | 11       |            |                                                                   | 0402                                                                                                                                                                                           |
+| 1u                          | 7        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 15p                         | 2        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 5.1k                        | 3        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 10k                         | 2        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 27.4                        | 4        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 1k                          | 1        |            |                                                                   | 0402                                                                                                                                                                                           |
+| 1.5k                        | 1        |            |                                                                   | 0402                                                                                                                                                                                           |
+| RP2040                      | 2        | $0.80      | [Link](https://mou.sr/3LW0tBj)                                    |                                                                                                                                                                                                |
+| W25Q16JVSSIQ                | 2        | $0.41      | [Link](https://www.mouser.com/ProductDetail/454-W25Q16JVSSIQ)     | Other Values in the family will probably work.  Currently something around 1-2MB is all that's needed.                                                                                         |
+| MIC5504-3.3YM5              | 1        | $0.16      | [Link](https://www.mouser.com/ProductDetail/998-MIC5504-3.3YM5TR) |                                                                                                                                                                                                |
+| ABM8-272-T3                 | 1        | $0.58      | [Link](https://www.mouser.com/ProductDetail/815-ABM8-272-T3)      |                                                                                                                                                                                                |
+| USB4056-03-A                | 1        | $0.97      | [Link](https://www.mouser.com/ProductDetail/640-USB4056-03-A)     | USB C Connector                                                                                                                                                                                |
+| 10118192-0001LF             | 1        | $0.41      | [Link](https://www.mouser.com/ProductDetail/649-10118192-0001LF)  | Micro USB                                                                                                                                                                                      |
+| USB-A3-S-RA                 | 1        | $0.62      | [Link](https://www.mouser.com/ProductDetail/737-USB-A3-S-RA)      | Type A Connector                                                                                                                                                                               |
+| PCB                         | 1        | $3.33      | [Link](https://oshpark.com/)                                      | $10 for 3.                                                                                                                                                                                     |
+| HDMI to USB 3.0 with MS2130 | 1        | $7         | Search  Aliexpress                                                | Capture card anything with the MS2130 is likely to work (also non- MS2130 based capcure cards *should* work as long as they are USB3.0)<br>I like this one from Amazon: https://a.co/d/gPflUW0 |
+| TOTAL                       |          | $15.5      |                                                                   | $8.5 Without the capture card                                                                                                                                                                  |
 
 
 # Software Design
-TODO: Fill in this outline
-## RP2040 FW
-- I am not a great with SW dev so there are, I'm sure issues in the code. 
-- There is a bug I could not figure out that made the PIO based USB break when I tried to use GPIO 4 as a pull up for the positive USB pin. 
-- HID forwarding system
-- Mass Storage Device
-### Dependencies
-- PIO USB 6.1
-- PICO SDK 2.0
-- TinyUSB (part of pico-sdk 2.0)
+Some disclaimers. A goal of this project was to use Zig for embeded work.  I'm sure some of the architectural decisions are not ideal because of that.  
+## Build Flow
+TODO
+## Host Firmware
+The host firmware handles the clock and reset pins of the guest.  It also presents as a Serial port for debug communication and pass-through of HID commands. There is a shared commands module used by all three executable to enable single source standardized messages.  For more details ask and/or see source code.
+The mass storage data image is generated using *mkfs.fat* and *mcopy* commands then converting that binary into a C source file.  
 
+## Guest Firmware
+The Guest FW receives HID commands and forwards them to the guest machine.  It presents a keyboard and mouse.  The mouse is relative for now - though I've explored doing an abs mouse.  For more details ask and/or see source code.
 ## GUI 
-There are two versions of the GUI.  A SDL3 based version which is written in Zig.  SDL3 must be installed on the machine.  And a python version which has several dependencies including SDL2, OpenCV and pyserial. 
+The GUI uses SDL3 to present the video frames and handle input events.  It supports *typing* copied text from the host to the guest with the insert key (so insert is not forwarded).  There are other limitations in what is forwarding based on the OS's restrictions I think. 
 ### Compatibility
-I've only really tested this on my setup so I've no clue how well it might work in any other setup.  I have tried to use cross platform, adaptable libraries so I'm hoping it's not too much work to enable elsewhere. 
-I'm pretty sure the SDL3/Zig version is close to working on windows.  There is one part that needs to be updated I think (see code comment).  I don't have an easy test platform.  
+I've only really tested this on my setup so I've no clue how well it might work in any other setup.  I have tried to use cross platform, adaptable libraries so I'm hoping it's not too much work to enable elsewhere.  I think it's pretty close to be working on windows if I could figure out cross compile. 
 
 # Next steps (in no order):
 - Audio support in GUI (work around is to use OS audio controls)
 - Bug fixes and compatibility improvements
 - Nothing supports having multiples connected a the same time (though not sure the use case is relevant the case should be handled somehow). 
-- Support Controller Inputs
+- Support Controller Events (I'm not sure how to enabled another interface in tinyUSB)
 - GUI based controls
     - Support special keys & key combinations (in UI)
-    - Fallback mouse mode (some things don't like absolute mouse I guess)
 - Windows support
-- Simplify launching GUI (currently requires coping the binary etc.)
-- FAT12 builder is pretty limited.  I'd like to move to something else.
-```
-# 1MB img file
-mkfs.fat -F 12 -n USBKVM -C temp.img 1024
-mcopy -i test3.img -s testFolderLongName/ ::
-```
-## Future Ideas
+- Simplify launching GUI (currently requires coping the binary out of the storage and making it executable see readme)
+- FAT12 build process feels like a hack.
+- Zig packed structs (learned about them too late)
+## Future HW Ideas
 - Integrate the MS2130 into the design directly
     - If I find a source, I'll likely try this.
 - Could we input VGA into the RP2040 and output USB UVC device - it would be slow and/or low resolution but might be interesting? 
-- Could remove the HUB IC and only support USB 3.0 to simplify the design even more (I think that could work from what I can tell 3.x is completely separate from USB 2.0)
 # Making your own
 
 ## Hardware
@@ -110,12 +90,10 @@ See BOM.
 - Hand held DMM verification of USB connections 
 - Capture card prep
     - Probably need to remove case. 
-
 ## Software 
 - Use the released version - just drag it to the RP2040 when it shows up in boot mode.
 - Alliteratively build it yourself:
 ### Building FW
 TODO this section
 
-### GUI 
-The python based GUI code comes with the RP2040 FW.  It does, however have several dependencies listed out in requirements.txt .  They are all available with a pip install and can alternatively be installed through whatever other means.  Usage is pretty standard so it's unlikely newer version will break compatibility.  
+The Icon comes from: [Remote desktop icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/remote-desktop)

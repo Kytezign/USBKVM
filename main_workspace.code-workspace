@@ -1,20 +1,24 @@
 {
 	"folders": [
 		{
-			"name": "ucode",
-			"path": "code/ucode"
-		},
-		{
-			"name": "gui_code",
-			"path": "code/gui_code"
-		},
-		{
-			"name": "zig_gui",
-			"path": "code/zig_gui"
+			"name": "code",
+			"path": "code"
 		},
 		{
 			"name": "src",
 			"path": "."
 		}
 	],
+	"settings": {
+		"zig.zls.globalCachePath": "",
+		"files.associations": {
+			"board_api.h": "c",
+			"stdlib.h": "c",
+			"tusb_config.h": "c",
+			"cstdint": "cpp",
+			"async_spi.pio.h": "c",
+			"*.pio": "c",
+			"sdl.h": "c"
+		}
+	},
 }

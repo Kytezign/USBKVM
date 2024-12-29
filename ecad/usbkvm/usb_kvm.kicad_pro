@@ -41,14 +41,14 @@
           "height": 1.815,
           "width": 1.815
         },
-        "silk_line_width": 0.1,
+        "silk_line_width": 0.127,
         "silk_text_italic": false,
-        "silk_text_size_h": 1.0,
-        "silk_text_size_v": 1.0,
-        "silk_text_thickness": 0.1,
+        "silk_text_size_h": 0.7,
+        "silk_text_size_v": 0.7,
+        "silk_text_thickness": 0.0762,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.5
+          "min_clearance": 0.0
         }
       },
       "diff_pair_dimensions": [
@@ -59,16 +59,17 @@
         }
       ],
       "drc_exclusions": [
-        "footprint_symbol_mismatch|102850000|55000000|03fa2cdb-aa15-4489-b1e4-3505d750fa6a|00000000-0000-0000-0000-000000000000",
-        "hole_clearance|94640000|51400000|e9fdf601-e14c-457c-8aa4-765438d72baa|8e91bede-2bef-4c0f-b099-82bc609d8c1a",
-        "hole_clearance|94640000|58600000|79af934f-6504-4fbc-8503-f60362450fc1|c87cdfb4-86e7-4afa-bd60-3bc0049859d4",
+        "items_not_allowed|105297067|81000000|d2ae0a05-9720-4586-9f3d-ec3b121ce887|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|105537000|82042000|1a1f5581-59b2-49bf-9c04-33f22dc8db76|00000000-0000-0000-0000-000000000000",
+        "items_not_allowed|88087500|82000000|1d5c3139-9b33-4886-94ef-df4992b001a4|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|101384000|63639600|1a97be28-d814-44dd-afd2-165dd9916289|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|101384000|73088400|a93b3de7-dfdb-47a5-b733-59aec627842d|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|104216200|54559200|03df51df-93d6-47c2-b91f-1b4a5ea596b0|00000000-0000-0000-0000-000000000000",
         "lib_footprint_mismatch|89377500|77600000|1d5c3139-9b33-4886-94ef-df4992b001a4|00000000-0000-0000-0000-000000000000",
-        "lib_footprint_mismatch|91405000|55000000|e19eae08-6e8c-41f6-bd82-abbcfa5fd8bf|00000000-0000-0000-0000-000000000000",
-        "silk_over_copper|88768377|58611459|8377fdaa-91c9-4dd5-a05e-39a21d0e9081|00000000-0000-0000-0000-000000000000",
-        "silk_over_copper|95200200|58449895|65c51e18-6cd2-4bb6-bd10-6362e57a8839|00000000-0000-0000-0000-000000000000",
-        "silk_over_copper|96615478|72073993|d3d6e7e1-35b0-47c1-9709-5074c347bb81|00000000-0000-0000-0000-000000000000",
-        "silk_overlap|90359667|58680953|13a5cef2-d380-48ee-8075-7a8a8a8476d6|65c51e18-6cd2-4bb6-bd10-6362e57a8839",
-        "solder_mask_bridge|94020000|58865000|79af934f-6504-4fbc-8503-f60362450fc1|c87cdfb4-86e7-4afa-bd60-3bc0049859d4"
+        "lib_footprint_mismatch|91305000|54991000|e19eae08-6e8c-41f6-bd82-abbcfa5fd8bf|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|89733609|50129853|8377fdaa-91c9-4dd5-a05e-39a21d0e9081|00000000-0000-0000-0000-000000000000",
+        "silk_over_copper|92615479|58525000|65c51e18-6cd2-4bb6-bd10-6362e57a8839|00000000-0000-0000-0000-000000000000",
+        "solder_mask_bridge|93920000|58856000|b2431055-c0a8-4127-a2ac-654a83287d54|8e60669e-16cc-4261-90ab-a298ecc0a5c4"
       ],
       "meta": {
         "version": 2
@@ -127,21 +128,21 @@
       },
       "rules": {
         "max_error": 0.005,
-        "min_clearance": 0.127,
-        "min_connection": 0.127,
-        "min_copper_edge_clearance": 0.5,
+        "min_clearance": 0.1524,
+        "min_connection": 0.1524,
+        "min_copper_edge_clearance": 0.381,
         "min_hole_clearance": 0.127,
         "min_hole_to_hole": 0.127,
-        "min_microvia_diameter": 0.4572,
+        "min_microvia_diameter": 0.508,
         "min_microvia_drill": 0.254,
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.8,
+        "min_text_height": 0.5,
         "min_text_thickness": 0.127,
         "min_through_hole_diameter": 0.254,
-        "min_track_width": 0.127,
-        "min_via_annular_width": 0.1,
-        "min_via_diameter": 0.4572,
+        "min_track_width": 0.1524,
+        "min_via_annular_width": 0.127,
+        "min_via_diameter": 0.508,
         "solder_mask_to_copper_clearance": 0.0,
         "use_height_for_length_calcs": true
       },

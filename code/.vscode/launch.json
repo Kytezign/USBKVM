@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Load Both",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/do.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--load"
+            ]
+        },
+        {
+            "name": "Load Host",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/do.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--host"
+            ]
+        },
+        {
+            "name": "Load Guest",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/do.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--guest"
+            ]
+        },
+        {
+            "name": "GUI only",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/do.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--gui"
+            ]
+        },
+
+        {
+            "name": "Test Only",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/do.py",
+            "console": "integratedTerminal",
+            "args": []
+        },
+        {
+            "name": "Run this file",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}"
+        }
+    ]
+}

@@ -1,5 +1,6 @@
 **/__pycache__/
 **/build/
+**/zig-out/
 **/hid_disp-backups/
 ecad/usbkvm/grb/*
 ecad/usbkvm/bom/*
@@ -9,6 +10,7 @@ ecad/usbkvm/~*
 ecad/usbkvm/DRC.rpt
 ecad/usbkvm/temp_kicad_lib
 .zig-cache
+code/old
 
 # For PCBs designed using KiCad: https://www.kicad.org/
 # Format documentation: https://kicad.org/help/file-formats/
@@ -40,3 +42,4 @@ fp-info-cache
 *.xml
 *.csv
 code/ucode/folder_bin.c
+code/guihost/SDL3
