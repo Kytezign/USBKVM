@@ -20,7 +20,8 @@ The electrical design consists of two RP2040, and several connectors.  It relies
 There is also a pretty basic enclosure design made with freecad.  
 
 ![](HWDiagram.excalidraw.svg)
-
+![[Pasted image 20250208075437.png]]
+![[Pasted image 20250208075447.png]]
 ## BOM
 Costs based on market costs circa Q1 2025.
 
