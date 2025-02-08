@@ -20,8 +20,11 @@ The electrical design consists of two RP2040, and several connectors.  It relies
 There is also a pretty basic enclosure design made with freecad.  
 
 ![](HWDiagram.excalidraw.svg)
-![[Pasted image 20250208075437.png]]
-![[Pasted image 20250208075447.png]]
+![image](https://github.com/user-attachments/assets/1d2f9e84-c156-4382-abbb-dcaea2896624)
+
+
+![image](https://github.com/user-attachments/assets/8b7ff43b-c152-4e0c-9fe9-0bfa70c1a8d7)
+
 ## BOM
 Costs based on market costs circa Q1 2025.
 
@@ -76,7 +79,9 @@ I've only really tested this on my setup so I've no clue how well it might work 
 ## Future HW Ideas
 - Integrate the MS2130 into the design directly
     - If I find a source, I'll likely try this.
-- Could we input VGA into the RP2040 and output USB UVC device - it would be slow and/or low resolution but might be interesting? 
+- Could we input VGA into the RP2040 and output USB UVC device - it would be slow and/or low resolution but might be interesting?
+- Revisit PIO based USB to guest (last time it was not mature enough)
+- Reduce the number of EEPROMs by having one RP2040 load the other one. 
 # Making your own
 
 ## Hardware
